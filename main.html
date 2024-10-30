@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Transition Slider</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            user-select: none; /* Disable text selection on the entire page */
+        }
+        .container {
+            position: relative;
+            width: 1700px;
+            height: 600px;
+            overflow: hidden;
+        }
+        .image-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            pointer-events: none; /* Prevent image click and drag */
+            draggable: false; /* Disable image dragging */
+        }
+        #image1 {
+            clip-path: inset(0 50% 0 0); /* Initially show left half of top image */
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+        }
+        .slider {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 50%; /* Center the slider initially */
+            width: 4px; /* Vertical line for slider */
+            background-color: #000;
+            opacity: 0.5;
+            cursor: pointer;
+            z-index: 3;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Bottom image (right side of slider) -->
+        <div class="image-container">
+            <img src="./GT_SRGB_010_.png" alt="Bottom Image" class="image" id="image2" draggable="false">
+        </div>
+        <!-- Top image (left side of slider) -->
+        <div class="image-container">
+            <img src="./NOISY_SRGB_010_.png" alt="Top Image" class="image" id="image1" draggable="false">
+        </div>
+        <!-- Vertical slider line -->
+        <div class="slider" id="slider"></div>
+    </div>
+
+    <script>
+        const slider = document.getElementById("slider");
+        const image1 = document.getElementById("image1");
+
+        slider.onmousedown = function () {
+            // Set up mouse move for horizontal movement
+            document.onmousemove = function (e) {
+                // Calculate slider position within container bounds
+                const containerRect = slider.parentElement.getBoundingClientRect();
+                const xPosition = Math.min(Math.max(0, e.clientX - containerRect.left), containerRect.width);
+                const percentage = (xPosition / containerRect.width) * 100;
+
+                // Apply clip-path based on slider position
+                image1.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
+
+                // Move slider to match clip-path
+                slider.style.left = `${xPosition}px`;
+            };
+
+            // Remove mouse move on release
+            document.onmouseup = function () {
+                document.onmousemove = null;
+            };
+        };
+    </script>
+</body>
+</html>
